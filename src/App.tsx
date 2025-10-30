@@ -107,6 +107,7 @@ export const App: React.FC = () => {
     }
 
     setUpdatingTodoIds(prev => [...prev, id]);
+
     patchTodo(id, { completed: !todo.completed })
       .then(updated =>
         setTodos(prev =>
@@ -120,6 +121,18 @@ export const App: React.FC = () => {
       .finally(() => {
         setUpdatingTodoIds(prev => prev.filter(t => t !== id));
       });
+  };
+
+  const handleToggleAll = () => {
+    const isAllCompleted = todos.every(td => td.completed);
+
+    const todosToUpdate = isAllCompleted
+      ? todos
+      : todos.filter(td => !td.completed);
+
+    todosToUpdate.forEach(todo => {
+      handleToggleTodo(todo.id);
+    });
   };
 
   const handleDeleteTodo = (id: number) => {
@@ -164,7 +177,9 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          {todos.length > 0 && <TodoButtons todos={todos} />}
+          {todos.length > 0 && (
+            <TodoButtons todos={todos} onToggleAll={handleToggleAll} />
+          )}
           <NewTodo
             focusedInput={focusedInput}
             onAddTodo={handleAddTodo}
