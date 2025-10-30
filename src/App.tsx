@@ -169,6 +169,27 @@ export const App: React.FC = () => {
     });
   };
 
+  const handleRenameTodo = async (
+    id: number,
+    newTitle: string,
+  ): Promise<void> => {
+    setUpdatingTodoIds(prev => [...prev, id]);
+
+    try {
+      const updated = await patchTodo(id, { title: newTitle });
+
+      setTodos(prev =>
+        prev.map(td => (td.id === id ? { ...td, ...updated } : td)),
+      );
+    } catch (error) {
+      setErrorMessage('Unable to update a todo');
+      setTimeout(() => setErrorMessage(''), 3000);
+      throw error;
+    } finally {
+      setUpdatingTodoIds(prev => prev.filter(t => t !== id));
+    }
+  };
+
   const handleCloseError = () => setErrorMessage('');
 
   return (
@@ -194,6 +215,7 @@ export const App: React.FC = () => {
           updatingTodoIds={updatingTodoIds}
           onToggle={handleToggleTodo}
           onDelete={handleDeleteTodo}
+          onRename={handleRenameTodo}
         />
 
         {todos.length > 0 && (
