@@ -12,10 +12,9 @@ import {
 } from './api/todos';
 import Notifications from './components/Notifications';
 import { Todo } from './types/Todo';
-import { Filter } from './components/Filter';
 import { TodoList } from './components/TodoList';
-import { NewTodo } from './components/NewTodo';
-import { TodoButtons } from './components/TodoButtons';
+import { TodoHeader } from './components/TodoHeader';
+import { TodoFooter } from './components/TodoFooter';
 import { FilterStatus } from './types/FilterStatus';
 
 export const App: React.FC = () => {
@@ -197,16 +196,13 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <header className="todoapp__header">
-          {todos.length > 0 && (
-            <TodoButtons todos={todos} onToggleAll={handleToggleAll} />
-          )}
-          <NewTodo
-            focusedInput={focusedInput}
-            onAddTodo={handleAddTodo}
-            disabled={isAdding}
-          />
-        </header>
+        <TodoHeader
+          todos={todos}
+          focusedInput={focusedInput}
+          isAdding={isAdding}
+          onToggleAll={handleToggleAll}
+          onAddTodo={handleAddTodo}
+        />
 
         <TodoList
           todos={filteredTodos}
@@ -219,26 +215,13 @@ export const App: React.FC = () => {
         />
 
         {todos.length > 0 && (
-          <footer className="todoapp__footer" data-cy="Footer">
-            <span className="todo-count" data-cy="TodosCounter">
-              {incompletedTodos.length} items left
-            </span>
-
-            <Filter
-              currentFilter={currentFilter}
-              onFilterChange={setCurrentFilter}
-            />
-
-            <button
-              type="button"
-              className="todoapp__clear-completed"
-              data-cy="ClearCompletedButton"
-              disabled={todos.length - incompletedTodos.length === 0}
-              onClick={handleClearCompleted}
-            >
-              Clear completed
-            </button>
-          </footer>
+          <TodoFooter
+            incompletedTodosCount={incompletedTodos.length}
+            completedTodosCount={todos.length - incompletedTodos.length}
+            currentFilter={currentFilter}
+            onFilterChange={setCurrentFilter}
+            onClearCompleted={handleClearCompleted}
+          />
         )}
       </div>
 
