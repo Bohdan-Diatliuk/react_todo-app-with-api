@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { UserWarning } from './UserWarning';
 import {
   USER_ID,
@@ -15,6 +15,12 @@ import { TodoFooter } from './components/TodoFooter';
 import { FilterStatus } from './types/FilterStatus';
 import { ErrorMessage } from './types/errorsMessage';
 
+const allFilters = {
+  [FilterStatus.All]: () => true,
+  [FilterStatus.Active]: (td: Todo) => !td.completed,
+  [FilterStatus.Completed]: (td: Todo) => td.completed,
+};
+
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [currentFilter, setCurrentFilter] = useState<FilterStatus>(
@@ -26,14 +32,6 @@ export const App: React.FC = () => {
   const [deletingTodoIds, setDeletingTodoIds] = useState<number[]>([]);
   const [updatingTodoIds, setUpdatingTodoIds] = useState<number[]>([]);
   const focusedInput = useRef<HTMLInputElement>(null);
-
-  const allFilters = useMemo(() => {
-    return {
-      [FilterStatus.All]: () => true,
-      [FilterStatus.Active]: (td: Todo) => !td.completed,
-      [FilterStatus.Completed]: (td: Todo) => td.completed,
-    };
-  }, []);
 
   useEffect(() => {
     setErrorMessage('');
@@ -48,7 +46,7 @@ export const App: React.FC = () => {
   }, []);
 
   const filteredTodos = todos.filter(allFilters[currentFilter]);
-  const incompletedTodos = todos.filter(td => !td.completed);
+  const incompletedTodos = todos.filter(allFilters[FilterStatus.Active]);
 
   const handleAddTodo = async (title: string): Promise<void> => {
     const trimmedTitle = title.trim();
